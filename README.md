@@ -48,6 +48,7 @@ from bs4 import BeautifulSoup
 import re
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from tqdm import tqdm
+```
 
 ## 📚 Library Descriptions
 
@@ -72,7 +73,7 @@ class Scraper:
 
 - Initializes a session for making requests.  
 - Sets the base URL based on the provided exam provider.
-
+```
 ---
 
 ## 📄 Get Number of Pages
@@ -86,6 +87,7 @@ def get_num_pages(self):
     except Exception as e:
         print(f"Error fetching page count: {e}")
         return 0
+```
 
 - Fetches and parses the number of pages available for the provider.
 
@@ -109,6 +111,7 @@ def fetch_page_links(self, page, search_string):
         return []
 
 - Fetches and filters exam question links from a specific page.
+```
 
 ---
 
@@ -125,7 +128,7 @@ def get_discussion_links(self, num_pages, search_string):
                 links.extend(page_links)
                 pbar.update(1)
     return links
-
+```
 - Uses parallel requests to fetch exam question links from multiple pages simultaneously.
 
 ---
@@ -140,7 +143,7 @@ def extract_topic_question(link):
     return (int(match.group(1)), int(match.group(2))) if match else (None, None)
 
 - Extracts topic and question numbers from the exam question link.
-
+```
 ---
 
 ## 💾 Write Grouped Links to File
@@ -160,7 +163,7 @@ def write_grouped_links_to_file(filename, links):
             print(f"Topic {topic} links added to file.")
 
 - Groups and writes the exam question links to a file based on their topic.
-
+```
 ---
 
 ## 🎯 Main Function
@@ -186,7 +189,7 @@ def main():
 
 if __name__ == "__main__":
     main()
-
+```
 - Prompts the user for the provider and exam code.  
 - Fetches and processes the exam question links.  
 - Saves the links to a text file.
