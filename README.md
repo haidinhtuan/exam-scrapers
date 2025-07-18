@@ -2,6 +2,7 @@
 
 This repository contains a Python script designed to scrape exam question links from the [Exam Topics](https://www.examtopics.com) website based on a specific provider and exam code.  
 The script is optimized to run in Google Colab and uses parallel requests for efficient data fetching.
+This code not only fetches the links, but also the questions, answers and provide option to export to .csv file for Flashcards
 
 ### Fetches 2.5 pages per second 📄⌛
 
