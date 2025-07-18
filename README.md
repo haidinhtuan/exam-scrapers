@@ -26,7 +26,7 @@ Make sure to install the necessary Python libraries before running the script:
 
 ```python
 !pip install requests beautifulsoup4 tqdm
-
+```
 
 ### ✅ 3. Run the Script
 
