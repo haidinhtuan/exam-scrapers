@@ -28,7 +28,7 @@ class Scraper:
             discussions = soup.find_all("a", {"class": "discussion-link"})
             links = [
                 discussion["href"].replace("/discussions", "https://www.examtopics.com/discussions", 1)
-                for discussion in discussions if search_string in discussion.text
+                for discussion in discussions if search_string.lower() in discussion.text.lower() # MODIFIED LINE
             ]
             return links
         except Exception as e:
@@ -54,16 +54,43 @@ def extract_topic_question(link):
     return (int(match.group(1)), int(match.group(2))) if match else (None, None)
 
 def write_grouped_links_to_file(filename, links):
-    """Write the grouped links to a file."""
+    """
+    Groups links by topic and writes them to a file,
+    after filtering out invalid links and sorting them.
+    """
     grouped_links = {}
-    for link in sorted(links, key=extract_topic_question):
-        topic, question = extract_topic_question(link)
-        grouped_links.setdefault(topic, []).append(link)
+    
+    # --- Start of new logic ---
 
+    # 1. Process links and filter out any that don't have a topic number.
+    #    This creates a list of dictionaries, making it easier to sort.
+    valid_links_to_process = []
+    for link in links:
+        # Call the extraction function only ONCE per link
+        topic, question = extract_topic_question(link)
+        
+        # If the topic is None, it's not a valid question link, so we skip it.
+        if topic is not None:
+            valid_links_to_process.append({'key': (topic, question), 'link': link})
+
+    # 2. Sort the list of valid links based on the key (topic, then question).
+    #    This is now safe because all keys are tuples of integers.
+    sorted_links = sorted(valid_links_to_process, key=lambda item: item['key'])
+
+    # 3. Group the pre-sorted links by topic number.
+    for item in sorted_links:
+        topic = item['key'][0]
+        link = item['link']
+        grouped_links.setdefault(topic, []).append(link)
+        
+    # --- End of new logic ---
+
+    # 4. Write the grouped links to the file.
+    #    The topics will already be in order because we sorted before grouping.
     with open(filename, 'w') as f:
-        for topic, links in grouped_links.items():
+        for topic, topic_links in grouped_links.items():
             f.write(f'Topic {topic}:\n')
-            for link in links:
+            for link in topic_links:
                 f.write(f' - {link}\n')
             print(f"Topic {topic} links added to file.")
 
@@ -73,8 +100,8 @@ def main():
     num_pages = scraper.get_num_pages()
     print("Total Pages:",num_pages)
     if num_pages > 0:
-        search_string = input("Enter exam code or enter QUIT to exit: ").upper()
-        if search_string != 'QUIT':
+        search_string = input("Enter exam code or enter QUIT to exit: ") # MODIFIED LINE
+        if search_string.lower() != 'quit':
             links = scraper.get_discussion_links(num_pages, search_string)
             filename = f'{search_string} dumps.txt'
             print(f"\nYour file will be named {filename}")
